@@ -74,12 +74,14 @@ export default {
       selectedPathways: [],
       searchTerm: '',
       currentPage: 1,
-      pathwayColorMap: this.pathways.reduce((acc, p) => ({ ...acc, [p.id]: generateColor() }), {}),
       sortProperty: null,
       sortDirection: 'ASC'
     }
   },
   computed: {
+    pathwayColorMap() {
+      return this.pathways.reduce((acc, p) => ({ ...acc, [p.id]: generateColor() }), {})
+    },
     filteredPathways() {
       return this.pathways.filter(p =>
           p.label.toLowerCase().includes(this.searchTerm.toLocaleLowerCase())

@@ -1,5 +1,5 @@
 const idSet = new Set()
-export const pathways = new Array(1000).fill(null).map(() => {
+export const generatePathways = () =>new Array(1000).fill(null).map(() => {
     let id
     let idReady = false
     while (!idReady) {

@@ -1,25 +1,19 @@
 <template>
   <div id="app" class="app">
-    <PathwayTable />
+    <PathwaySelector />
     <SubmitGenes />
   </div>
 </template>
 
 <script>
 import SubmitGenes from '@/components/SubmitGenes.vue'
-import PathwayTable from "@/components/PathwayTable";
-import { pathways } from "@/api/fixtures/pathwayFixtures";
+import PathwaySelector from "@/components/PathwaySelector";
 
 export default {
   name: 'App',
   components: {
-    PathwayTable,
+    PathwaySelector,
     SubmitGenes: SubmitGenes
-  },
-  data() {
-    return {
-      pathways
-    }
   }
 }
 </script>
