@@ -934,6 +934,14 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
+"@simonwep/pickr@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@simonwep/pickr/-/pickr-1.7.2.tgz#99c73a3852633f749c8c187c82627a448b76b1ef"
+  integrity sha512-XHmQKS1k1gUvB4kOj9W3DTpT5SQWDovSm3KuOtmlkHmezkF/WzyraPIk+vwroxESdugfqanJZFvgdj9lzHcEKw==
+  dependencies:
+    core-js "^3.6.5"
+    nanopop "^1.3.0"
+
 "@soda/friendly-errors-webpack-plugin@^1.7.1":
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/@soda/friendly-errors-webpack-plugin/-/friendly-errors-webpack-plugin-1.7.1.tgz#706f64bcb4a8b9642b48ae3ace444c70334d615d"
@@ -5633,6 +5641,11 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+nanopop@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/nanopop/-/nanopop-1.3.0.tgz#831df018169fb0a699d55a8d70a2ecd82abe7d00"
+  integrity sha512-DQDhHyPhKLKrXOjVkChsAoWh/WpKuVINDKl4qvFbguqokRJWQBSNSlPzMS+Xy3yBQKeQ39rICMB2asDvdUiVxw==
 
 natural-compare@^1.4.0:
   version "1.4.0"

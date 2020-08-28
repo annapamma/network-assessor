@@ -12,6 +12,7 @@ export const pathways = new Array(1000).fill(null).map(() => {
 
     return {
         id,
-        label: Math.random().toString(36).substring(7)
+        label: Math.random().toString(36).substring(7),
+        pValue: Math.random() * .00001
     }
 })

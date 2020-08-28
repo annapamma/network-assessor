@@ -24,21 +24,48 @@
       </button>
     </div>
     <div v-if="filteredPathways.length === 0">No matching pathways</div>
-    <div class="checkboxes">
-      <div v-for="pathway in currentFilteredPathways" :key="pathway.id">
-        <label :for="pathway.id">{{ pathway.label }}</label>
-        <input :value="pathway.id" :id="pathway.id" type="checkbox" v-model="selectedPathways" />
-      </div>
-    </div>
+    <table class="pathway-table">
+      <thead>
+        <tr>
+          <th class="checkbox">x</th>
+          <th>name</th>
+          <th @click="() => updatePropToSort('pValue')">p val</th>
+        </tr>
+      </thead>
+      <tr v-for="pathway in currentPathways" :key="pathway.id">
+        <td class="checkbox">
+          <input :value="pathway.id" :id="pathway.id" type="checkbox" v-model="selectedPathways" />
+        </td>
+        <td>
+          <label :for="pathway.id">{{ pathway.label }}</label>
+        </td>
+        <td :title="pathway.pValue">
+          {{ toPValue(pathway.pValue) }}
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          <ColorPicker :color="pathwayColorMap[pathway.id]" :updateColor="(newColor) => updateColor(pathway.id, newColor)" />
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
 <script>
+import ColorPicker from './ColorPicker.vue';
+const generateColor = () => '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
+const toPValue = (num) => Number(num).toExponential(2)
 
-const PAGE_LENGTH = 50
+const PAGE_LENGTH = 20
+const togggleSortDirection = dir => dir === 'ASC' ? 'DESC' : 'ASC'
 
 export default {
   name: "PathwaySelector",
+  components: {
+    ColorPicker
+  },
   props: {
     pathways: Array
   },
@@ -46,7 +73,10 @@ export default {
     return {
       selectedPathways: [],
       searchTerm: '',
-      currentPage: 1
+      currentPage: 1,
+      pathwayColorMap: this.pathways.reduce((acc, p) => ({ ...acc, [p.id]: generateColor() }), {}),
+      sortProperty: null,
+      sortDirection: 'ASC'
     }
   },
   computed: {
@@ -55,9 +85,18 @@ export default {
           p.label.toLowerCase().includes(this.searchTerm.toLocaleLowerCase())
       )
     },
-    currentFilteredPathways() {
+    sortedPathways() {
+      const prop = this.sortProperty
+      if (prop) {
+        return this.filteredPathways.slice().sort((a, b) => {
+          return this.sortDirection === 'ASC' ? 1 : -1 * (a[prop] - b[prop])
+        })
+      }
+      return this.filteredPathways
+    },
+    currentPathways() {
       const startIdx =  (this.currentPage - 1) * PAGE_LENGTH
-      return this.filteredPathways.slice(startIdx, startIdx + PAGE_LENGTH)
+      return this.sortedPathways.slice(startIdx, startIdx + PAGE_LENGTH)
     },
     numberOfPages() {
       return Math.floor(this.filteredPathways.length / PAGE_LENGTH)
@@ -66,6 +105,18 @@ export default {
   methods: {
     updatePage(newValue) {
       this.currentPage = newValue
+    },
+    updateColor(id, newColor) {
+      this.pathwayColorMap[id] = newColor
+    },
+    toPValue,
+    updatePropToSort(prop) {
+      if (prop === this.sortProperty) {
+        this.sortDirection = togggleSortDirection(this.sortDirection)
+      } else {
+        this.sortProperty = prop
+        this.sortDirection = 'ASC'
+      }
     }
   },
   watch: {
@@ -83,9 +134,29 @@ export default {
     margin-bottom: 1em;
   }
 
-  .checkboxes {
+  table.pathway-table {
     max-height: 400px;
     overflow: auto;
+  }
+
+  tr {
+    display: flex;
+    margin: 0 -0.5em;
+    height: 3em;
+    align-items: center;
+  }
+
+  tr > * {
+    font-size: 16px;
+    margin: auto 0.5em;
+  }
+
+  th,td {
+    width: 4em;
+  }
+
+  .checkbox {
+    width: 1em;
   }
 
   .selected {

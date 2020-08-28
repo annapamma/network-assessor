@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import SubmitGenes from './components/SubmitGenes.vue'
+import SubmitGenes from '@/components/SubmitGenes.vue'
 import PathwaySelector from "@/components/PathwaySelector";
 import { pathways } from "@/api/fixtures/pathwayFixtures";
 
@@ -29,9 +29,8 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  font-size: 16px;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 .app {
