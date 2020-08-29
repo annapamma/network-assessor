@@ -1,7 +1,9 @@
-const vis = window.vis
+import { Network } from 'vis-network/peer'
+import { DataSet } from 'vis-data/peer'
+import "vis-network/styles/vis-network.css";
 
 // create an array with nodes
-var nodes = new vis.DataSet([
+var nodes = new DataSet([
   { id: 1, label: "Node 1" },
   { id: 2, label: "Node 2" },
   { id: 3, label: "Node 3" },
@@ -10,7 +12,7 @@ var nodes = new vis.DataSet([
 ]);
 
 // create an array with edges
-var edges = new vis.DataSet([
+var edges = new DataSet([
   { from: 1, to: 3 },
   { from: 1, to: 2 },
   { from: 2, to: 4 },
@@ -24,12 +26,17 @@ var data = {
 };
 
 export const createNetwork = container => {
-  // create a network
   var options = {
     physics: {
       enabled: false
     }
   };
   
-  return new vis.Network(container, data, options);
+  const network = new Network(container, data, options);
+
+  return {
+    network,
+    nodes,
+    edges
+  }
 }
