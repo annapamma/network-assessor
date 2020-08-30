@@ -1,6 +1,8 @@
 <template>
-  <div ref="colorPicker" />
-  <div ref="colorPickerContainer" />
+  <div>
+    <div ref="colorPicker" />
+    <div ref="colorPickerContainer" />
+  </div>
 </template>
 
 <script>

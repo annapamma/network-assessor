@@ -46,7 +46,7 @@
           19
         </td>
         <td>
-          <ColorPicker :color="pathwayColorMap[pathway.id]" :updateColor="(newColor) => updateColor(pathway.id, newColor)" />
+          <ColorPicker v-if="pathwayColorMap[pathway.id]" :color="pathwayColorMap[pathway.id]" :updateColor="updateColor(pathway.id)" />
         </td>
       </tr>
     </table>
@@ -55,7 +55,7 @@
 
 <script>
 import ColorPicker from './ColorPicker.vue';
-const generateColor = () => '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
+import { POPULATE_COLOR_MAP, UPDATE_COLOR_MAP } from '@/store/store';
 const toPValue = (num) => Number(num).toExponential(2)
 
 const PAGE_LENGTH = 20
@@ -78,9 +78,12 @@ export default {
       sortDirection: 'ASC'
     }
   },
+  mounted() {
+    this.$store.dispatch(POPULATE_COLOR_MAP, { pathways: this.pathways })
+  },
   computed: {
     pathwayColorMap() {
-      return this.pathways.reduce((acc, p) => ({ ...acc, [p.id]: generateColor() }), {})
+      return this.$store.state.pathwayColorMap
     },
     filteredPathways() {
       return this.pathways.filter(p =>
@@ -108,8 +111,10 @@ export default {
     updatePage(newValue) {
       this.currentPage = newValue
     },
-    updateColor(id, newColor) {
-      this.pathwayColorMap[id] = newColor
+    updateColor(id) {
+      return (newColor) => {
+        this.$store.dispatch(UPDATE_COLOR_MAP, { id, newColor })
+      }
     },
     toPValue,
     updatePropToSort(prop) {
@@ -126,6 +131,9 @@ export default {
       if (prevVal !== newVal) {
         this.currentPage = 1
       }
+    },
+    pathways(pathways) {
+      this.$store.dispatch(POPULATE_COLOR_MAP, { pathways })
     }
   }
 }
