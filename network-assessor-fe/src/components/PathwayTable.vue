@@ -33,6 +33,7 @@
         </tr>
       </thead>
       <tr v-for="pathway in currentPathways" :key="pathway.id">
+        {{ pathway.id }}
         <td class="checkbox">
           <input :value="pathway.id" :id="pathway.id" type="checkbox" v-model="selectedPathways" />
         </td>
