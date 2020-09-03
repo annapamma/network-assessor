@@ -1,16 +1,56 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { generatePathways } from '@/api/fixtures/pathwayFixtures'
+
+const databaseAPathways = generatePathways('A')
+const databaseBPathways = generatePathways('B')
+const databaseCPathways = generatePathways('C')
+
+const k_dbId_v_pwIds = {
+  'A': databaseAPathways.map(pw => pw.id),
+  'B': databaseBPathways.map(pw => pw.id),
+  'C': databaseCPathways.map(pw => pw.id),
+}
+
+const k_pwId_v_dbId = {
+  ...databaseAPathways.reduce((acc, p) => ({ ...acc, [p.id]: 'A' }), {}),
+  ...databaseBPathways.reduce((acc, p) => ({ ...acc, [p.id]: 'B' }), {}),
+  ...databaseCPathways.reduce((acc, p) => ({ ...acc, [p.id]: 'C' }), {}),
+}
+
+const k_pwId_v_label = {
+  ...databaseAPathways.reduce((acc, p) => ({ ...acc, [p.id]: p.label }), {}),
+  ...databaseBPathways.reduce((acc, p) => ({ ...acc, [p.id]: p.label }), {}),
+  ...databaseCPathways.reduce((acc, p) => ({ ...acc, [p.id]: p.label }), {}),
+}
+
+const k_pwId_v_pVal = {
+  ...databaseAPathways.reduce((acc, p) => ({ ...acc, [p.id]: p.pValue }), {}),
+  ...databaseBPathways.reduce((acc, p) => ({ ...acc, [p.id]: p.pValue }), {}),
+  ...databaseCPathways.reduce((acc, p) => ({ ...acc, [p.id]: p.pValue }), {}),
+}
 
 Vue.use(Vuex)
 
 const generateColor = () => '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
 
-export const UPDATE_COLOR_MAP = 'UPDATE_COLOR_MAP'
-export const POPULATE_COLOR_MAP = 'POPULATE_COLOR_MAP'
-export const UPDATE_SELECTED_DB = 'UPDATE_SELECTED_DB'
-export const UPDATE_NODE_ELEMENT_MOUNTED = 'UPDATE_NODE_ELEMENT_MOUNTED'
-
 const state = {
+  currentPage: {
+    'A': 1, 
+    'B': 1,
+    'C': 1
+  },
+  edges: [
+    { from: 1, to: 3 },
+    { from: 1, to: 2 },
+    { from: 2, to: 4 },
+    { from: 2, to: 5 },
+    { from: 3, to: 3 },
+  ],
+  k_pwId_v_dbId,
+  k_dbId_v_pwIds,
+  k_pwId_v_label,
+  k_pwId_v_pVal,
   nodeElement: null,
   nodes: [
     { id: 1, label: 'Node 1', shape: "circularImage", pathways: ['A-1', 'A-5', 'A-3'], image: 'https://post.medicalnewstoday.com/wp-content/uploads/sites/3/2020/02/322868_1100-800x825.jpg' },
@@ -19,53 +59,76 @@ const state = {
     { id: 4, label: 'Node 4', shape: "circularImage", pathways: ['A-4'], image: '' },
     { id: 5, label: 'Node 5', shape: "circularImage", pathways: ['A-5'], image: '' },
   ],
-  edges: [
-    { from: 1, to: 3 },
-    { from: 1, to: 2 },
-    { from: 2, to: 4 },
-    { from: 2, to: 5 },
-    { from: 3, to: 3 },
-  ],
   pathwayColorMap: {},
   selectedDb: 'A',
 }
 
 const mutations = {
-  updateColorMap(state, { id, newColor }) {
+  UPDATE_COLOR_MAP(state, { id, newColor }) {
     state.pathwayColorMap = {
       ...state.pathwayColorMap,
       [id]: newColor
     }
   },
-  populateColorMap(state, { pathways }) {
-    state.pathwayColorMap = pathways.reduce((acc, { id }) => {
+  POPULATE_COLOR_MAP(state, { pathways }) {
+    const pathwayColorMap = pathways.reduce((acc, id) => {
       return {
         ...acc,
-        [id]: state.pathwayColorMap[id] || acc[id] || generateColor()
+        [id]: state.pathwayColorMap[id] || generateColor()
       }
-    }, {})
+    }, state.pathwayColorMap)
+    state.pathwayColorMap = pathwayColorMap
   },
-  updateSelectedDb(state, { id }) {
+  SORT_BY_P_VAL(state) {
+    // {a: 1, b: 2, c: 3} [a, b, c]
+    // {a: 1} 
+    const pathways = new Set(state.k_dbId_v_pwIds[state.selectedDb])
+    const sorted = Object.entries(state.k_pwId_v_pVal)
+      .filter(([id, ]) => 
+        pathways.has(id)
+      )
+      .sort((a, b) => {
+        const [, valA] = a
+        const [, valB] = b
+        // a[prop] - b[prop] to sort ASC
+        return valA - valB
+      })
+      .map(([k, ]) => k)
+      Vue.set(state.k_dbId_v_pwIds, state.selectedDb, sorted)
+  },
+  UPDATE_SELECTED_DB(state, { id }) {
     state.selectedDb = id
   },
   UPDATE_NODE_ELEMENT(state, el) {
     state.nodeElement = el
+  },
+  UPDATE_PAGE(state, pageNum) {
+    state.currentPage[state.selectedDb] = pageNum
   }
 }
 
 const actions = {
-  [UPDATE_COLOR_MAP]({ commit }, { id, newColor }) {
-    commit('updateColorMap', { id, newColor })
+  updateColorMap({ commit }, { id, newColor }) {
+    commit('UPDATE_COLOR_MAP', { id, newColor })
   },
-  [POPULATE_COLOR_MAP]({ commit }, { pathways }) {
-    commit('populateColorMap', { pathways })
+  populateColorMap({ commit }, { pathways }) {
+    commit('POPULATE_COLOR_MAP', { pathways })
   },
-  [UPDATE_SELECTED_DB]({ commit }, { id }) {
-    commit('updateSelectedDb', { id })
+  sortByKey( { commit }, sortKey) {
+    if (sortKey === 'pVal') {
+      commit('SORT_BY_P_VAL')
+    }
+  },
+  updateSelectedDb({ commit }, { id }) {
+    commit('UPDATE_SELECTED_DB', { id })
   },
   updateNodeElement( { commit }, el) {
     commit('UPDATE_NODE_ELEMENT', el)
-  }
+  },
+  updatePage( { commit }, pageNum ) {
+    commit('UPDATE_PAGE', pageNum)
+  },
+
 }
 
 export const store = new Vuex.Store({

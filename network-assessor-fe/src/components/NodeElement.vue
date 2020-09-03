@@ -11,6 +11,7 @@
     data() {
       return {
         series: new Array(this.node.pathways.length).fill(100/this.node.pathways.length),
+        //next step: select pathways and only do this with intersection of selected pathways
       }
     },
     computed: {
@@ -21,6 +22,35 @@
             chart: {
               width: 380,
               type: 'pie',
+              animations: {
+                enabled: false,
+              },
+              selection: {
+                enabled: false,
+              },
+            },
+            plotOptions: {
+              pie: {
+                expandOnClick: false
+              }
+            },
+            states: {
+              normal: {
+                  filter: {
+                      type: 'none',
+                      value: 0,
+                  }
+              },
+              hover: {
+                  filter: {
+                      type: 'none',
+                  }
+              },
+              active: {
+                  filter: {
+                      type: 'none',
+                  }
+              },
             },
             dataLabels: {
               enabled: false
@@ -30,6 +60,9 @@
             },
             legend: {
               show: false
+            },
+            tooltip: {
+              enabled: false,
             },
             labels: this.node.pathways,
             responsive: [{

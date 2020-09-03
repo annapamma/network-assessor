@@ -1,53 +1,30 @@
 <template>
-  <div class="pathway-selector">
-    <div class="pathway-filter">
-      <span>Search: </span>
-      <input type="text" v-model="searchTerm" />
-    </div>
-    <div class="pagination" v-if="numberOfPages > 1">
-      <button v-if="currentPage > 1" @click="updatePage(1)">
-        1
-      </button>
-      <span v-if="currentPage - 1 > 2">...</span>
-      <button v-if="currentPage - 1 > 1" @click="updatePage(currentPage - 1)">
-        {{ currentPage - 1 }}
-      </button>
-      <button class="selected">
-        {{ currentPage }}
-      </button>
-      <button v-if="currentPage + 1 < numberOfPages" @click="updatePage(currentPage + 1)">
-        {{ currentPage + 1 }}
-      </button>
-      <span v-if="numberOfPages - currentPage > 2">...</span>
-      <button v-if="currentPage < numberOfPages" @click="updatePage(numberOfPages)">
-        {{ numberOfPages }}
-      </button>
-    </div>
-    <div v-if="filteredPathways.length === 0">No matching pathways</div>
+  <div class="pathway-table">
+    <pathway-table-pagination :pathways="pathways" :pageLength="pageLength"/>
     <table class="pathway-table">
       <thead>
         <tr>
           <th class="checkbox">x</th>
           <th>name</th>
-          <th @click="() => updatePropToSort('pValue')">p val</th>
+          <!-- <th @click="() => sortByKey('pVal')"> -->
+          <th>
+            p val
+          </th>
         </tr>
       </thead>
-      <tr v-for="pathway in currentPathways" :key="pathway.id">
-        {{ pathway.id }}
+      <tr v-for="pwId in currentPathways" :key="pwId">
+        {{ pwId }}
         <td class="checkbox">
-          <input :value="pathway.id" :id="pathway.id" type="checkbox" v-model="selectedPathways" />
+          <input :value="pwId" :id="pwId" type="checkbox" v-model="selectedPathways" />
         </td>
         <td>
-          <label :for="pathway.id">{{ pathway.label }}</label>
+          <label :for="pwId">{{ k_pwId_v_label[pwId] }}</label>
         </td>
-        <td :title="pathway.pValue">
-          {{ toPValue(pathway.pValue) }}
-        </td>
-        <td>
-          19
+        <td :title="k_pwId_v_pVal[pwId]">
+          {{ toPValue(k_pwId_v_pVal[pwId]) }}
         </td>
         <td>
-          <ColorPicker v-if="pathwayColorMap[pathway.id]" :color="pathwayColorMap[pathway.id]" :updateColor="updateColor(pathway.id)" />
+          <ColorPicker v-if="pathwayColorMap[pwId]" :color="pathwayColorMap[pwId]" :updateColor="updateColor(pwId)" />
         </td>
       </tr>
     </table>
@@ -55,34 +32,49 @@
 </template>
 
 <script>
+import PathwayTablePagination from "@/components/PathwayTablePagination.vue"
 import ColorPicker from './ColorPicker.vue';
-import { POPULATE_COLOR_MAP, UPDATE_COLOR_MAP } from '@/store/store';
 const toPValue = (num) => Number(num).toExponential(2)
 
-const PAGE_LENGTH = 20
-const togggleSortDirection = dir => dir === 'ASC' ? 'DESC' : 'ASC'
+// const togggleSortDirection = dir => dir === 'ASC' ? 'DESC' : 'ASC'
 
 export default {
   name: "PathwayTable",
   components: {
-    ColorPicker
-  },
-  props: {
-    pathways: Array
+    ColorPicker,
+    PathwayTablePagination
   },
   data() {
     return {
+      pValAsc: true,
       selectedPathways: [],
       searchTerm: '',
-      currentPage: 1,
       sortProperty: null,
-      sortDirection: 'ASC'
+      sortDirection: 'ASC',
+      pageLength: 20,
     }
   },
   mounted() {
-    this.$store.dispatch(POPULATE_COLOR_MAP, { pathways: this.pathways })
+    this.$store.dispatch('populateColorMap', { pathways: this.pathways })
+    this.$store.dispatch('sortByKey', 'pVal')
   },
   computed: {
+    currentPage() {
+      return this.$store.state.currentPage[this.$store.state.selectedDb]
+    },
+    currentPathways() {
+      const startIdx =  (this.currentPage - 1) * this.pageLength
+      return this.pathways.slice(startIdx, startIdx + this.pageLength)
+    },
+    k_pwId_v_label() {
+      return this.$store.state.k_pwId_v_label
+    },
+    k_pwId_v_pVal() {
+      return this.$store.state.k_pwId_v_pVal
+    },
+    pathways() {
+      return this.$store.state.k_dbId_v_pwIds[this.$store.state.selectedDb]
+    },
     pathwayColorMap() {
       return this.$store.state.pathwayColorMap
     },
@@ -100,13 +92,6 @@ export default {
       }
       return this.filteredPathways
     },
-    currentPathways() {
-      const startIdx =  (this.currentPage - 1) * PAGE_LENGTH
-      return this.sortedPathways.slice(startIdx, startIdx + PAGE_LENGTH)
-    },
-    numberOfPages() {
-      return Math.floor(this.filteredPathways.length / PAGE_LENGTH)
-    }
   },
   methods: {
     updatePage(newValue) {
@@ -114,18 +99,21 @@ export default {
     },
     updateColor(id) {
       return (newColor) => {
-        this.$store.dispatch(UPDATE_COLOR_MAP, { id, newColor })
+        this.$store.dispatch('updateColorMap', { id, newColor })
       }
     },
+    sortByKey(sortKey) {
+      this.$store.dispatch('sortByKey', sortKey)
+    },
     toPValue,
-    updatePropToSort(prop) {
-      if (prop === this.sortProperty) {
-        this.sortDirection = togggleSortDirection(this.sortDirection)
-      } else {
-        this.sortProperty = prop
-        this.sortDirection = 'ASC'
-      }
-    }
+    // updatePropToSort(prop) {
+    //   if (prop === this.sortProperty) {
+    //     this.sortDirection = togggleSortDirection(this.sortDirection)
+    //   } else {
+    //     this.sortProperty = prop
+    //     this.sortDirection = 'ASC'
+    //   }
+    // }
   },
   watch: {
     searchTerm(newVal, prevVal) {
@@ -134,7 +122,7 @@ export default {
       }
     },
     pathways(pathways) {
-      this.$store.dispatch(POPULATE_COLOR_MAP, { pathways })
+      this.$store.dispatch('populateColorMap', { pathways })
     }
   }
 }
@@ -168,9 +156,5 @@ export default {
 
   .checkbox {
     width: 1em;
-  }
-
-  .selected {
-    background: lightblue;
   }
 </style>
