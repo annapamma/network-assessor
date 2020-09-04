@@ -4,16 +4,14 @@
     <table class="pathway-table">
       <thead>
         <tr>
+          <th>id</th>
           <th class="checkbox">x</th>
           <th>name</th>
-          <!-- <th @click="() => sortByKey('pVal')"> -->
-          <th>
-            p val
-          </th>
+          <th @click="() => sortByKey('pVal')">p val</th>
         </tr>
       </thead>
       <tr v-for="pwId in currentPathways" :key="pwId">
-        {{ pwId }}
+        <td>{{ pwId }}</td>
         <td class="checkbox">
           <input :value="pwId" :id="pwId" type="checkbox" v-model="selectedPathways" />
         </td>
@@ -56,7 +54,6 @@ export default {
   },
   mounted() {
     this.$store.dispatch('populateColorMap', { pathways: this.pathways })
-    this.$store.dispatch('sortByKey', 'pVal')
   },
   computed: {
     currentPage() {
@@ -105,15 +102,7 @@ export default {
     sortByKey(sortKey) {
       this.$store.dispatch('sortByKey', sortKey)
     },
-    toPValue,
-    // updatePropToSort(prop) {
-    //   if (prop === this.sortProperty) {
-    //     this.sortDirection = togggleSortDirection(this.sortDirection)
-    //   } else {
-    //     this.sortProperty = prop
-    //     this.sortDirection = 'ASC'
-    //   }
-    // }
+    toPValue
   },
   watch: {
     searchTerm(newVal, prevVal) {

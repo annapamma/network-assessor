@@ -2,6 +2,16 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { generatePathways } from '@/api/fixtures/pathwayFixtures'
 
+const toggleSortDirection = currentSortDirection => {
+  if (!currentSortDirection) {
+    return 'ASC'
+  } else if (currentSortDirection === 'ASC') {
+    return 'DESC'
+  } else {
+    return 'ASC'
+  }
+}
+
 const databaseAPathways = generatePathways('A')
 const databaseBPathways = generatePathways('B')
 const databaseCPathways = generatePathways('C')
@@ -61,6 +71,9 @@ const state = {
   ],
   pathwayColorMap: {},
   selectedDb: 'A',
+  pathwayTableSortDirectionByKey: {
+    pVal: null,
+  }
 }
 
 const mutations = {
@@ -80,21 +93,23 @@ const mutations = {
     state.pathwayColorMap = pathwayColorMap
   },
   SORT_BY_P_VAL(state) {
-    // {a: 1, b: 2, c: 3} [a, b, c]
-    // {a: 1} 
+    const currentSortDirection = state.pathwayTableSortDirectionByKey.pVal
+    const newSortDirection = toggleSortDirection(currentSortDirection)
+    console.log('newSortDirection', newSortDirection)
+    state.pathwayTableSortDirectionByKey.pVal = newSortDirection
+    
     const pathways = new Set(state.k_dbId_v_pwIds[state.selectedDb])
-    const sorted = Object.entries(state.k_pwId_v_pVal)
-      .filter(([id, ]) => 
-        pathways.has(id)
-      )
-      .sort((a, b) => {
-        const [, valA] = a
-        const [, valB] = b
+
+    const sortedKeys = Object.keys(state.k_pwId_v_pVal)
+      .filter((id) => pathways.has(id))
+      .sort((idA, idB) => {
+        const valA = state.k_pwId_v_pVal[idA]
+        const valB = state.k_pwId_v_pVal[idB]
         // a[prop] - b[prop] to sort ASC
-        return valA - valB
+        return (newSortDirection === 'ASC' ? 1 : -1) * (valA - valB)
       })
-      .map(([k, ]) => k)
-      Vue.set(state.k_dbId_v_pwIds, state.selectedDb, sorted)
+
+    Vue.set(state.k_dbId_v_pwIds, state.selectedDb, sortedKeys)
   },
   UPDATE_SELECTED_DB(state, { id }) {
     state.selectedDb = id
@@ -115,8 +130,13 @@ const actions = {
     commit('POPULATE_COLOR_MAP', { pathways })
   },
   sortByKey( { commit }, sortKey) {
-    if (sortKey === 'pVal') {
-      commit('SORT_BY_P_VAL')
+    switch (sortKey) {
+      case 'pVal':
+        commit('SORT_BY_P_VAL')
+        return
+      default:
+        console.warn(`sorting by invalid key ${sortKey}`)
+        return
     }
   },
   updateSelectedDb({ commit }, { id }) {
