@@ -15,8 +15,13 @@
       color: String,
       updateColor: Function
     },
+    data() {
+      return {
+        pickr: null
+      }
+    },
     mounted() {
-      createPicker({
+      this.pickr = createPicker({
         container: this.$refs.colorPickerContainer,
         el: this.$refs.colorPicker,
         theme: 'classic',
@@ -31,6 +36,9 @@
         default: this.color,
         position: 'right'
       }, { onSave: this.updateColor })
+    },
+    beforeDestroy() {
+      this.pickr.destroyAndRemove()
     }
   }
 </script>
