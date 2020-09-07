@@ -26,10 +26,46 @@ import {submitGenes} from "@/api";
 import { createNetwork } from "@/network/createNetwork";
 import NodeElement from "@/components/NodeElement";
 
-// var data = {
-//   nodes: nodes,
-//   edges: edges,
-// };
+const fixtureNodes = [
+  {
+    id: 1,
+    label: 'Node 1',
+    shape: 'circle',
+    pathways: ['A-1', 'A-5', 'A-3']
+  },
+  {
+    id: 2,
+    label: 'Node 2',
+    shape: 'circle',
+    pathways: ['A-2', 'A-3'],
+  },
+  {
+    id: 3,
+    label: 'Node 3',
+    shape: 'circle',
+    pathways: ['A-3'],
+  },
+  {
+    id: 4,
+    label: 'Node 4',
+    shape: 'circle',
+    pathways: ['A-4'],
+  },
+  {
+    id: 5,
+    label: 'Node 5',
+    shape: 'circle',
+    pathways: ['A-5'],
+  },
+].map(n => ({ ...n, color: '#2B7CE9' }))
+
+const fixtureEdges = [
+  { from: 1, to: 3 },
+  { from: 1, to: 2 },
+  { from: 2, to: 4 },
+  { from: 2, to: 5 },
+  { from: 3, to: 3 },
+].map(n => ({ ...n, color: { color: '#848484' } }))
 
 export default {
   name: 'HelloWorld',
@@ -46,14 +82,16 @@ export default {
     }
   },
   methods: {
-    updateNode(id, image) {
-      this.nodes.update({id, image})
+    updateNode(id, props) {
+      this.nodes.update({ id, ...props })
     },
     async handleSubmit() {
       const inputList = this.text.split('\n').map(str => str.trim()).filter(s => !!s)
       const uniques = Array.from(new Set(inputList))
       try {
         await submitGenes(uniques)
+        // uses fixtures for now
+        this.$store.dispatch('updateNetwork', { nodes: fixtureNodes.slice(), edges: fixtureEdges.slice() })
         this.startNetwork()
       } catch (error) {
         console.error(error)
@@ -68,10 +106,22 @@ export default {
           edges: this.$store.state.edges
         }
       )
-      // window.nodes = nodes
       this.network = network;
       this.nodes = nodes;
       this.edges = edges;
+    },
+  colorQueryListNodes() {
+      const updateNode = this.updateNode
+      this.queryList.forEach((id) => {
+        console.log('updating...', id)
+        updateNode(id, {
+          color: {
+            border: '#E92B7C',
+            background: '#E92B7C',
+            highlight: '#BA2263'
+          }
+        })
+      })
     }
   },
   computed: {
@@ -83,28 +133,15 @@ export default {
     },
     nodeElement() {
       return this.$store.state.nodeElement
+    },
+    queryList() {
+      return this.$store.state.queryList
     }
   },
   watch: {
-    pathwayColorMap() {
-      if (!this.nodes) return
-      // this.nodes.forEach((node) => {
-      //     console.log(node)
-      //     node.pathways.forEach(() => {
-      //       const url = "data:image/svg+xml;charset=utf-8," 
-      //        + encodeURIComponent(this.nodeElement.outerHTML)
-      //       this.nodes.update({id: node.id, image: url});
-      //     })
-          // if (node.pathways) {
-          //   nodesToUpdate.push({ id: node.id, pathways: {}})
-          // }
-        // }
-      // )
-    },
-    // nodeElement() {
-    //   console.log('im in the watcher for nodeElementMounted')
-    //   console.log(this.nodeElement)
-    // }
+    storeNodes() {
+      this.colorQueryListNodes()
+    }
   }
 }
 </script>

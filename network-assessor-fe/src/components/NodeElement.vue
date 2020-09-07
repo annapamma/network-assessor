@@ -1,6 +1,6 @@
 <template>
   <div class="node-elemet">
-    <apexchart ref="demoChart" type="pie" width="380" :options="chartOptions" :series="series"></apexchart>
+    <apexchart ref="pieChart" type="pie" width="380" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>
 
@@ -76,10 +76,18 @@
           }
       }
     },
+    methods: {
+      updateNodeWithSvg() {
+        const svgText = encodeURIComponent(this.$refs.pieChart.$el.querySelector('svg').outerHTML)
+        const image = `data:image/svg+xml;charset=utf-8,${svgText}`
+        this.updateNode(this.node.id, { image, shape: 'circularImage' })
+      }
+    },
+    mounted() {
+      this.updateNodeWithSvg()
+    },
     updated() {
-      const image = "data:image/svg+xml;charset=utf-8," 
-             + encodeURIComponent(this.$refs.demoChart.$el.querySelector('svg').outerHTML)
-      this.updateNode(this.node.id, image)
+      this.updateNodeWithSvg()
     }
   }
 </script>

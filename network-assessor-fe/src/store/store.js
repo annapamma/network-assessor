@@ -46,34 +46,23 @@ const generateColor = () => '#' + Math.random().toString(16).slice(2, 8).toUpper
 
 const state = {
   currentPage: {
-    'A': 1, 
-    'B': 1,
-    'C': 1
+    A: 1,
+    B: 1,
+    C: 1,
   },
-  edges: [
-    { from: 1, to: 3 },
-    { from: 1, to: 2 },
-    { from: 2, to: 4 },
-    { from: 2, to: 5 },
-    { from: 3, to: 3 },
-  ],
   k_pwId_v_dbId,
   k_dbId_v_pwIds,
   k_pwId_v_label,
   k_pwId_v_pVal,
   nodeElement: null,
-  nodes: [
-    { id: 1, label: 'Node 1', shape: "circularImage", pathways: ['A-1', 'A-5', 'A-3'], image: 'https://post.medicalnewstoday.com/wp-content/uploads/sites/3/2020/02/322868_1100-800x825.jpg' },
-    { id: 2, label: 'Node 2', shape: "circularImage", pathways: ['A-2', 'A-3'], image: '' },
-    { id: 3, label: 'Node 3', shape: "circularImage", pathways: ['A-3'], image: '' },
-    { id: 4, label: 'Node 4', shape: "circularImage", pathways: ['A-4'], image: '' },
-    { id: 5, label: 'Node 5', shape: "circularImage", pathways: ['A-5'], image: '' },
-  ],
+  queryList: [1, 2],
+  nodes: [],
+  edges: [],
   pathwayColorMap: {},
   selectedDb: 'A',
   pathwayTableSortDirectionByKey: {
     pVal: null,
-  }
+  },
 }
 
 const mutations = {
@@ -119,6 +108,10 @@ const mutations = {
   },
   UPDATE_PAGE(state, pageNum) {
     state.currentPage[state.selectedDb] = pageNum
+  },
+  UPDATE_NETWORK(state, { nodes, edges }) {
+    state.nodes = nodes
+    state.edges = edges
   }
 }
 
@@ -148,7 +141,9 @@ const actions = {
   updatePage( { commit }, pageNum ) {
     commit('UPDATE_PAGE', pageNum)
   },
-
+  updateNetwork({ commit }, { nodes, edges }) {
+    commit('UPDATE_NETWORK', { nodes, edges })
+  }
 }
 
 export const store = new Vuex.Store({
