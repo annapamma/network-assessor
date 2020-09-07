@@ -1,6 +1,8 @@
 <template>
   <div class="pathway-table">
-    <pathway-table-pagination :pathways="pathways" :pageLength="pageLength"/>
+    <span>Search: </span>
+    <input type="text" v-model="searchTerm" />
+    <pathway-table-pagination :pathways="filteredPathways" :pageLength="pageLength"/>
     <table class="pathway-table">
       <thead>
         <tr>
@@ -44,11 +46,8 @@ export default {
   },
   data() {
     return {
-      pValAsc: true,
       selectedPathways: [],
       searchTerm: '',
-      sortProperty: null,
-      sortDirection: 'ASC',
       pageLength: 20,
     }
   },
@@ -61,7 +60,7 @@ export default {
     },
     currentPathways() {
       const startIdx =  (this.currentPage - 1) * this.pageLength
-      return this.pathways.slice(startIdx, startIdx + this.pageLength)
+      return this.filteredPathways.slice(startIdx, startIdx + this.pageLength)
     },
     k_pwId_v_label() {
       return this.$store.state.k_pwId_v_label
@@ -76,19 +75,10 @@ export default {
       return this.$store.state.pathwayColorMap
     },
     filteredPathways() {
-      return this.pathways.filter(p =>
-          p.label.toLowerCase().includes(this.searchTerm.toLocaleLowerCase())
-      )
-    },
-    sortedPathways() {
-      const prop = this.sortProperty
-      if (prop) {
-        return this.filteredPathways.slice().sort((a, b) => {
-          return this.sortDirection === 'ASC' ? 1 : -1 * (a[prop] - b[prop])
-        })
-      }
-      return this.filteredPathways
-    },
+      return this.pathways.filter(pId => {
+        return this.k_pwId_v_label[pId].toLowerCase().includes(this.searchTerm.toLocaleLowerCase())
+      })
+    }
   },
   methods: {
     updatePage(newValue) {
