@@ -113,7 +113,6 @@ export default {
   colorQueryListNodes() {
       const updateNode = this.updateNode
       this.queryList.forEach((id) => {
-        console.log('updating...', id)
         updateNode(id, {
           color: {
             border: '#E92B7C',
@@ -159,7 +158,7 @@ export default {
     border: 1px solid lightgray;
   }
 
-  /* .node-holder {
+  .node-holder {
     display: none;
-  } */
+  }
 </style>

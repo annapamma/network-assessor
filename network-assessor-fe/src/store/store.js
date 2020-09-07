@@ -63,6 +63,7 @@ const state = {
   pathwayTableSortDirectionByKey: {
     pVal: null,
   },
+  selectedPathways: []
 }
 
 const mutations = {
@@ -112,6 +113,9 @@ const mutations = {
   UPDATE_NETWORK(state, { nodes, edges }) {
     state.nodes = nodes
     state.edges = edges
+  },
+  UPDATE_SELECTED_PATHWAYS(state, { pathways }) {
+    state.selectedPathways = pathways
   }
 }
 
@@ -143,6 +147,9 @@ const actions = {
   },
   updateNetwork({ commit }, { nodes, edges }) {
     commit('UPDATE_NETWORK', { nodes, edges })
+  },
+  updateSelectedPathways({ commit }, { pathways }) {
+    commit('UPDATE_SELECTED_PATHWAYS', { pathways })
   }
 }
 

@@ -2,18 +2,21 @@
   <div id="app" class="app">
     <ThePathwayTableContainer />
     <SubmitGenes />
+    <Legend />
   </div>
 </template>
 
 <script>
 import SubmitGenes from '@/components/SubmitGenes.vue'
 import ThePathwayTableContainer from "@/components/ThePathwayTableContainer";
+import Legend from "@/components/Legend";
 
 export default {
   name: 'App',
   components: {
     ThePathwayTableContainer,
-    SubmitGenes: SubmitGenes
+    SubmitGenes,
+    Legend
   }
 }
 </script>
