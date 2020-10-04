@@ -1,25 +1,8 @@
 <template>
-  <div id="app" class="app">
-    <ThePathwayTableContainer />
-    <SubmitGenes />
-    <Legend />
+  <div id="app">
+    <router-view/>
   </div>
 </template>
-
-<script>
-import SubmitGenes from '@/components/SubmitGenes.vue'
-import ThePathwayTableContainer from "@/components/ThePathwayTableContainer";
-import Legend from "@/components/Legend";
-
-export default {
-  name: 'App',
-  components: {
-    ThePathwayTableContainer,
-    SubmitGenes,
-    Legend
-  }
-}
-</script>
 
 <style>
 #app {
@@ -28,9 +11,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   color: #2c3e50;
-}
-
-.app {
-  display: flex;
 }
 </style>

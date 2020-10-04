@@ -7,9 +7,9 @@ app = Flask(__name__,
             static_folder="../network-assessor-fe/dist/assets",
             template_folder="../network-assessor-fe/dist")
 
-
-@app.route('/', methods=['GET'])
-def landing_page():
+@app.route('/', methods=['GET'], defaults={'path': ''})
+@app.route('/<path:path>', methods=['GET'])
+def spa_index(path):
     return render_template('index.html')
 
 
