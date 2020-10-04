@@ -134,7 +134,7 @@ const actions = {
   async submitGenes({ commit }, uniques) {
     try {
       const res = await submitGenes(uniques)
-      commit('SUBMIT_GENES', res.data)
+      commit('UPDATE_NETWORK', res.data)
     } catch (error) {
       console.error(error)
       this.error = error.message
