@@ -11,8 +11,6 @@
 </template>
 
 <script>
-import { submitGenes } from "@/api";
-
 export default {
   name: 'SubmitGenes',
   data() {
@@ -26,11 +24,12 @@ export default {
       const inputList = this.text.split('\n').map(str => str.trim()).filter(s => !!s)
       const uniques = Array.from(new Set(inputList))
       try {
-        await submitGenes(uniques)
-      } catch (error) {
-        console.error(error)
-        this.error = error.message
+        await this.$store.dispatch('submitGenes', uniques)
+        this.$router.push({ name: 'Network' })
+      } catch(e) {
+        console.error(e)
       }
+
     }
   },
   watch: {

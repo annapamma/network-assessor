@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { generatePathways } from '@/api/fixtures/pathwayFixtures'
+import { submitGenes } from "@/api";
 
 const toggleSortDirection = currentSortDirection => {
   if (!currentSortDirection) {
@@ -82,6 +83,10 @@ const mutations = {
     }, state.pathwayColorMap)
     state.pathwayColorMap = pathwayColorMap
   },
+  SUBMIT_GENES(state, res) {
+    console.log(state)
+    console.log('network rez: ', res)
+  },
   SORT_BY_P_VAL(state) {
     const currentSortDirection = state.pathwayTableSortDirectionByKey.pVal
     const newSortDirection = toggleSortDirection(currentSortDirection)
@@ -125,6 +130,15 @@ const actions = {
   },
   populateColorMap({ commit }, { pathways }) {
     commit('POPULATE_COLOR_MAP', { pathways })
+  },
+  async submitGenes({ commit }, uniques) {
+    try {
+      const res = await submitGenes(uniques)
+      commit('SUBMIT_GENES', res.data)
+    } catch (error) {
+      console.error(error)
+      this.error = error.message
+    }
   },
   sortByKey( { commit }, sortKey) {
     switch (sortKey) {

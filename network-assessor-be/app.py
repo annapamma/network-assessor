@@ -16,5 +16,71 @@ def spa_index(path):
 @app.route('/api/submit-genes', methods=['POST'])
 @cross_origin()
 def submit_genes():
+    """
+    input: json data object
+        {
+            "genes": [
+                "sdsdf"
+            ]
+        }
+
+    output: json of nodes and edges
+        const fixtureNodes = [
+            {
+                id: 1,
+                label: 'Node 1',
+                shape: 'circle',
+                pathways: ['A-1', 'A-5', 'A-3'],
+                color: '#2B7CE9' 
+            }, 
+            {
+                id: 2,
+                label: 'Node 2',
+                shape: 'circle',
+                pathways: ['A-2', 'A-3'],
+                color: '#2B7CE9',
+            },
+            {
+                id: 3,
+                label: 'Node 3',
+                shape: 'circle',
+                pathways: ['A-3'],
+                color: '#2B7CE9',
+            },
+        ]
+
+        const fixtureEdges = [
+            { from: 1, to: 3 , color: '#848484'},
+        ]
+    """
     data = request.get_json()
-    return jsonify({'genes': data['genes']})
+
+    fixtureNodes = [
+        {
+            'id': 1,
+            'label': 'Node 1',
+            'shape': 'circle',
+            'pathways': ['A-1', 'A-5', 'A-3'],
+            'color': '#2B7CE9' 
+        }, 
+        {
+            'id': 2,
+            'label': 'Node 2',
+            'shape': 'circle',
+            'pathways': ['A-2', 'A-3'],
+            'color': '#2B7CE9',
+        },
+        {
+            'id': 3,
+            'label': 'Node 3',
+            'shape': 'circle',
+            'pathways': ['A-3'],
+            'color': '#2B7CE9',
+        },
+    ]
+
+    fixtureEdges = [
+        { 'from': 1, 'to': 3 , 'color': '#848484'},
+    ]
+
+    return jsonify({'nodes': fixtureNodes, 'edges': fixtureEdges})
