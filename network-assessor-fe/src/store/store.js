@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { generatePathways } from '@/api/fixtures/pathwayFixtures'
 import { submitGenes } from "@/api";
+import { vuexfireMutations, firebaseAction } from 'vuexfire'
+import { fetchPathwaysByDbName } from '@/db'
 
 const toggleSortDirection = currentSortDirection => {
   if (!currentSortDirection) {
@@ -42,14 +44,13 @@ const k_pwId_v_pVal = {
 }
 
 Vue.use(Vuex)
-
 const generateColor = () => '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
 
 const state = {
   currentPage: {
-    A: 1,
-    B: 1,
-    C: 1,
+    kegg: 1,
+    reactome: 1,
+    wikipathways: 1,
   },
   k_pwId_v_dbId,
   k_dbId_v_pwIds,
@@ -60,7 +61,8 @@ const state = {
   nodes: [],
   edges: [],
   pathwayColorMap: {},
-  selectedDb: 'A',
+  pathways: [],
+  selectedDb: 'kegg',
   pathwayTableSortDirectionByKey: {
     pVal: null,
   },
@@ -75,7 +77,7 @@ const mutations = {
     }
   },
   POPULATE_COLOR_MAP(state, { pathways }) {
-    const pathwayColorMap = pathways.reduce((acc, id) => {
+    const pathwayColorMap = pathways.reduce((acc, { id }) => {
       return {
         ...acc,
         [id]: state.pathwayColorMap[id] || generateColor()
@@ -83,9 +85,9 @@ const mutations = {
     }, state.pathwayColorMap)
     state.pathwayColorMap = pathwayColorMap
   },
-  SUBMIT_GENES(state, res) {
-    console.log(state)
-    console.log('network rez: ', res)
+  SUBMIT_GENES() {
+    // console.log(state)
+    // console.log('network rez: ', res)
   },
   SORT_BY_P_VAL(state) {
     const currentSortDirection = state.pathwayTableSortDirectionByKey.pVal
@@ -121,7 +123,8 @@ const mutations = {
   },
   UPDATE_SELECTED_PATHWAYS(state, { pathways }) {
     state.selectedPathways = pathways
-  }
+  },
+  ...vuexfireMutations
 }
 
 const actions = {
@@ -164,7 +167,13 @@ const actions = {
   },
   updateSelectedPathways({ commit }, { pathways }) {
     commit('UPDATE_SELECTED_PATHWAYS', { pathways })
-  }
+  },
+  bindPathwaysRef: firebaseAction(context => {
+    return context.bindFirebaseRef(
+      'pathways',
+      fetchPathwaysByDbName(context.state.selectedDb)
+    )
+  })
 }
 
 export const store = new Vuex.Store({

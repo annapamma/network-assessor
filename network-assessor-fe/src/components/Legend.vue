@@ -1,12 +1,12 @@
 <template>
   <table class="legend" v-if="selectedPathways.length">
-    <tr v-for="id in selectedPathways" :key="id">
-      <td class="label">{{ k_pwId_v_label[id] }}</td>
-      <td class="pVal" :title="k_pwId_v_pVal[id]">
+    <tr v-for="pw in selectedPathways" :key="pw.id">
+      <td class="label">{{ pw.label }}</td>
+      <!-- <td class="pVal" :title="pw.id">
         {{ toPValue(k_pwId_v_pVal[id]) }}
-      </td>
+      </td> -->
       <td>
-        <div class="color" :style="getComputedStyle(id)"/>
+        <div class="color" :style="getComputedStyle(pw.id)"/>
       </td>
     </tr>
   </table>

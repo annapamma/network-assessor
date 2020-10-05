@@ -7,25 +7,27 @@
       <table>
         <thead>
           <tr>
-            <th>id</th>
             <th class="checkbox">x</th>
-            <th>name</th>
-            <th @click="() => sortByKey('pVal')">p val</th>
+            <th class="pw-label">name</th>
+            <!-- <th @click="() => sortByKey('pVal')">p val</th> -->
+            <th>gene len</th>
           </tr>
         </thead>
-        <tr v-for="pwId in currentPathways" :key="pwId">
-          <td>{{ pwId }}</td>
+        <tr v-for="pw in currentPathways" :key="pw.id">
           <td class="checkbox">
-            <input :value="pwId" :id="pwId" type="checkbox" v-model="selectedPathways" />
+            <input :value="pw" :id="pw.id" type="checkbox" v-model="selectedPathways" />
           </td>
-          <td>
-            <label :for="pwId">{{ k_pwId_v_label[pwId] }}</label>
+          <td class="pw-label">
+            <label :for="pw.id">{{ pw.label }}</label>
           </td>
-          <td :title="k_pwId_v_pVal[pwId]">
+          <!-- <td :title="k_pwId_v_pVal[pwId]">
             {{ toPValue(k_pwId_v_pVal[pwId]) }}
+          </td> -->
+          <td>
+            {{ pw.gene_len }}
           </td>
           <td>
-            <ColorPicker v-if="pathwayColorMap[pwId]" :color="pathwayColorMap[pwId]" :updateColor="updateColor(pwId)" />
+            <ColorPicker v-if="pathwayColorMap[pw.id]" :color="pathwayColorMap[pw.id]" :updateColor="updateColor(pw.id)" />
           </td>
         </tr>
       </table>
@@ -53,7 +55,7 @@ export default {
     return {
       showButton: false,
       searchTerm: '',
-      pageLength: 20,
+      pageLength: 20
     }
   },
   mounted() {
@@ -82,14 +84,14 @@ export default {
       return this.$store.state.k_pwId_v_pVal
     },
     pathways() {
-      return this.$store.state.k_dbId_v_pwIds[this.$store.state.selectedDb]
+      return this.$store.state.pathways
     },
     pathwayColorMap() {
       return this.$store.state.pathwayColorMap
     },
     filteredPathways() {
-      return this.pathways.filter(pId => {
-        return this.k_pwId_v_label[pId].toLowerCase().includes(this.searchTerm.toLocaleLowerCase())
+      return this.pathways.filter(({ label  }) => {
+        return label.toLowerCase().includes(this.searchTerm.toLocaleLowerCase())
       })
     }
   },
@@ -141,7 +143,7 @@ export default {
   tr {
     display: flex;
     margin: 0 -0.5em;
-    height: 3em;
+    min-height: 3em;
     align-items: center;
   }
 
@@ -156,6 +158,11 @@ export default {
 
   .checkbox {
     width: 1em;
+  }
+
+  .pw-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .redraw-button {

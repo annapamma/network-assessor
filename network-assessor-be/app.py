@@ -60,21 +60,21 @@ def submit_genes():
             'id': 1,
             'label': 'Node 1',
             'shape': 'circle',
-            'pathways': ['A-1', 'A-5', 'A-3'],
+            'pathways': ['1'],
             'color': '#2B7CE9' 
         }, 
         {
             'id': 2,
             'label': 'Node 2',
             'shape': 'circle',
-            'pathways': ['A-2', 'A-3'],
+            'pathways': ['2', '3'],
             'color': '#2B7CE9',
         },
         {
             'id': 3,
             'label': 'Node 3',
             'shape': 'circle',
-            'pathways': ['A-3'],
+            'pathways': ['3'],
             'color': '#2B7CE9',
         },
     ]

@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       text: '',
-      error: null
+      error: null,
     }
   },
   methods: {

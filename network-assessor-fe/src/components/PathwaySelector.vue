@@ -39,21 +39,13 @@
     data() {
       return {
         databases: [
-          {id: 'A', label: 'A'},
-          {id: 'B', label: 'B'},
-          {id: 'C', label: 'C'},
+          {id: 'kegg', label: 'KEGG'},
+          {id: 'wikipathways', label: 'Wikipathways'},
+          {id: 'reactome', label: 'Reactome'},
         ],
       }
     },
     computed: {
-      // pathways() {
-      //   return Object.entries(this.$store.state.k_pwId_v_dbId)
-      //     .filter(([, dbId]) => dbId === this.selectedDb)
-      //     .map(([pwId]) => pwId)
-      // },
-      // pathways() {
-      //   return databases.find(db => db.id === this.selectedDb).pathways
-      // },
       selectedDb: {
         get() {
           return this.$store.state.selectedDb
@@ -61,6 +53,14 @@
         set(id) {
           this.$store.dispatch('updateSelectedDb', { id })
         }
+      }
+    },
+    mounted() {
+      this.$store.dispatch('bindPathwaysRef')
+    },
+    watch: {
+      selectedDb() {
+        this.$store.dispatch('bindPathwaysRef')
       }
     }
   }
